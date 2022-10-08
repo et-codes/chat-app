@@ -13,7 +13,7 @@ def index():
 
 @app.get('/api/users')
 def return_all_users():
-    return 'All users'
+    return users
 
 
 @app.get('/api/users/<user>')
@@ -31,9 +31,14 @@ def add_user():
         return 'Content-Type not supported.'
 
 
+@app.get('/api/channels')
+def return_all_channels():
+    return channels
+
+
 @app.get('/api/messages')
 def return_all_messages():
-    return 'All messages'
+    return messages
 
 
 @app.post('/api/messages')
@@ -44,6 +49,44 @@ def add_message():
         return f"Add message {json['message']}"
     else:
         return 'Content-Type not supported.'
+
+
+# BEGIN DUMMY DATA
+users = ['eric', 'other_guy', 'Jimmy J']
+messages = [
+  {
+    'id': 1,
+    'user': 'eric',
+    'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
+  },
+  {
+    'id': 2,
+    'user': 'other_guy',
+    'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
+  },
+  {
+    'id': 3,
+    'user': 'eric',
+    'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
+  },
+  {
+    'id': 4,
+    'user': 'other_guy',
+    'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
+  },
+  {
+    'id': 5,
+    'user': 'eric',
+    'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
+  },
+  {
+    'id': 6,
+    'user': 'other_guy',
+    'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
+  }
+]
+channels = ['General', 'Random', 'Off-topic']
+# END DUMMY DATA
 
 
 if __name__ == '__main__':
