@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import Flask, request
 from flask_cors import CORS
 
@@ -26,7 +27,8 @@ def add_user():
     content_type = request.headers.get('Content-Type')
     if (content_type == 'application/json'):
         json = request.json
-        return f"Add user {json['user']}"
+        timestamp = datetime.today()
+        return f"Added user {json['user']} on {timestamp}"
     else:
         return 'Content-Type not supported.'
 
@@ -56,31 +58,37 @@ users = ['eric', 'other_guy', 'Jimmy J']
 messages = [
   {
     'id': 1,
+    'timestamp': '2022-10-08 12:22:24.971424',
     'user': 'eric',
     'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
   },
   {
     'id': 2,
+    'timestamp': '2022-10-08 12:23:25.909003',
     'user': 'other_guy',
     'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
   },
   {
     'id': 3,
+    'timestamp': '2022-10-09 12:23:25.909003',
     'user': 'eric',
     'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
   },
   {
     'id': 4,
+    'timestamp': '2022-10-09 12:25:25.909003',
     'user': 'other_guy',
     'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
   },
   {
     'id': 5,
+    'timestamp': '2022-10-10 14:23:25.909003',
     'user': 'eric',
     'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
   },
   {
     'id': 6,
+    'timestamp': '2022-10-10 16:23:25.909003',
     'user': 'other_guy',
     'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
   }
