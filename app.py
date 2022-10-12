@@ -74,9 +74,12 @@ def handle_message(message):
         'user': message['user'],
         'text': message['text']
     }
-    print(message_object)
+    socketio.send(
+        json.dumps(message_object), 
+        broadcast=True
+    )
+    print('New message created:', message_object)
     messages.append(message_object)
-    socketio.send(json.dumps(message), broadcast=True)
 
 
 # BEGIN DUMMY DATA
