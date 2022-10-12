@@ -1,12 +1,17 @@
 from datetime import datetime
 from flask import Flask, request
 from flask_cors import CORS
+from flask_socketio import SocketIO
+import json
 
 
 app = Flask(__name__, static_folder='./build', static_url_path='/')
-cors = CORS(app)
+app.config['SECRET_KEY'] = 'et-codes'
+CORS(app, resources={r'/*': {'origins': '*'}})
+socketio = SocketIO(app, cors_allowed_origins='*')
 
 
+# HTTP routes
 @app.route('/')
 def index():
     return app.send_static_file('index.html')
@@ -27,8 +32,8 @@ def add_user():
     content_type = request.headers.get('Content-Type')
     if (content_type == 'application/json'):
         json = request.json
-        timestamp = datetime.today()
-        return f"Added user {json['user']} on {timestamp}"
+        created_on = datetime.today().isoformat()
+        return f"Added user {json['user']} on {created_on}"
     else:
         return 'Content-Type not supported.'
 
@@ -53,42 +58,62 @@ def add_message():
         return 'Content-Type not supported.'
 
 
+# WEBSOCKET handling
+@socketio.on('connect')
+def connect():
+    print(f'{request.sid} has connected.')
+
+
+@socketio.on('message')
+def handle_message(message):
+    message = json.loads(message)
+    message_object = {
+        'id': messages[-1]['id'] + 1,
+        'created_on': datetime.today().isoformat(),
+        'user': message['user'],
+        'text': message['text']
+    }
+    print(message_object)
+    messages.append(message_object)
+    socketio.send(json.dumps(message), broadcast=True)
+
+
 # BEGIN DUMMY DATA
 users = ['eric', 'other_guy', 'Jimmy J']
 messages = [
   {
     'id': 1,
-    'timestamp': '2022-10-08 12:22:24.971424',
+    'created_on': '2022-10-08 12:22:24.971424',
     'user': 'eric',
     'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
   },
   {
     'id': 2,
-    'timestamp': '2022-10-08 12:23:25.909003',
+    'created_on': '2022-10-08 12:23:25.909003',
     'user': 'other_guy',
     'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
   },
   {
     'id': 3,
-    'timestamp': '2022-10-09 12:23:25.909003',
+    'created_on': '2022-10-09 12:23:25.909003',
     'user': 'eric',
     'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
   },
   {
     'id': 4,
-    'timestamp': '2022-10-09 12:25:25.909003',
+    'created_on': '2022-10-09 12:25:25.909003',
     'user': 'other_guy',
     'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
   },
   {
     'id': 5,
-    'timestamp': '2022-10-10 14:23:25.909003',
+    'created_on': '2022-10-10 14:23:25.909003',
     'user': 'eric',
     'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
   },
   {
     'id': 6,
-    'timestamp': '2022-10-10 16:23:25.909003',
+    'created_on': '2022-10-10 16:23:25.909003',
     'user': 'other_guy',
     'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
   }
@@ -98,4 +123,4 @@ channels = ['General', 'Random', 'Off-topic']
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    socketio.run(app, debug=True)
