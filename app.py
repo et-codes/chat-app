@@ -62,6 +62,7 @@ def add_message():
 @socketio.on('connect')
 def connect():
     print(f'{request.sid} has connected.')
+    socketio.emit('connect', f'Connected {request.sid}')
 
 
 @socketio.on('message')
@@ -79,7 +80,11 @@ def handle_message(message):
 
 
 # BEGIN DUMMY DATA
-users = ['eric', 'other_guy', 'Jimmy J']
+users = [
+    'eric',
+    'other_guy',
+    'Jimmy J'
+]
 messages = [
   {
     'id': 1,
