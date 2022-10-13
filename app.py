@@ -10,6 +10,7 @@ app.config['SECRET_KEY'] = 'et-codes'
 CORS(app, resources={r'/*': {'origins': '*'}})
 socketio = SocketIO(app, cors_allowed_origins='*')
 
+active_users = []
 
 # HTTP routes
 @app.route('/')
@@ -19,7 +20,7 @@ def index():
 
 @app.get('/api/users')
 def return_all_users():
-    return users
+    return active_users
 
 
 @app.get('/api/users/<user>')
@@ -70,6 +71,16 @@ def handle_message(message):
     )
     print('New message created:', message_object)
     messages.append(message_object)
+
+
+@socketio.on('login')
+def handle_login(username):
+    active_users.append(username)
+    socketio.emit(
+        'active_users',
+        active_users,
+        broadcast = True
+    )
 
 
 # BEGIN DUMMY DATA
