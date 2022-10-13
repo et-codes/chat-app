@@ -48,16 +48,6 @@ def return_all_messages():
     return messages
 
 
-@app.post('/api/messages')
-def add_message():
-    content_type = request.headers.get('Content-Type')
-    if (content_type == 'application/json'):
-        json = request.json
-        return f"Add message {json['message']}"
-    else:
-        return 'Content-Type not supported.'
-
-
 # WEBSOCKET handling
 @socketio.on('connect')
 def connect():
