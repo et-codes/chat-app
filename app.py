@@ -11,6 +11,7 @@ CORS(app, resources={r'/*': {'origins': '*'}})
 socketio = SocketIO(app, cors_allowed_origins='*')
 
 active_users = []
+active_sessions = {}
 
 # HTTP routes
 @app.route('/')
@@ -53,6 +54,8 @@ def return_all_messages():
 @socketio.on('connect')
 def connect():
     print(f'{request.sid} has connected.')
+    if request.sid not in active_sessions:
+        active_sessions[request.sid] = None
     socketio.emit('connect', f'Connected {request.sid}')
 
 
@@ -60,7 +63,7 @@ def connect():
 def handle_message(message):
     message = json.loads(message)
     message_object = {
-        'id': messages[-1]['id'] + 1,
+        'message_id': messages[-1]['message_id'] + 1,
         'created_on': datetime.today().isoformat(),
         'user': message['user'],
         'text': message['text']
@@ -77,12 +80,36 @@ def handle_message(message):
 def handle_login(username):
     if username not in active_users:
         active_users.append(username)
-        
-    socketio.emit(
-        'active_users',
-        active_users,
-        broadcast = True
-    )
+        active_sessions[request.sid] = username
+        print('Logged in:', username, request.sid)
+
+    socketio.emit('active_users', active_users, broadcast = True)
+
+
+@socketio.on('logout')
+def handle_logout(username):
+    active_users.remove(username)
+    sessions = active_sessions.copy()
+    for sid, user in sessions.items():
+        if user == username:
+            del active_sessions[sid]
+
+    print('Logged out:', username, request.sid)
+
+    socketio.emit('active_users', active_users, broadcast = True)
+
+
+@socketio.on('disconnect')
+def disconnect():
+    if request.sid in active_sessions:
+        disconnected_user = active_sessions[request.sid]
+        del active_sessions[request.sid]
+
+    active_users.remove(disconnected_user)
+
+    print('Disconnected', disconnected_user, request.sid)
+
+    socketio.emit('active_users', active_users, broadcast = True)
 
 
 # BEGIN DUMMY DATA
