@@ -19,7 +19,7 @@ def index():
 
 
 @app.get('/api/users')
-def return_all_users():
+def return_active_users():
     return active_users
 
 
@@ -85,49 +85,62 @@ def handle_login(username):
 
 # BEGIN DUMMY DATA
 users = [
-    'eric',
-    'other_guy',
-    'Jimmy J'
+    {'user_id': 1, 'username': 'eric', 'password': 'password'},
+    {'user_id': 2, 'username': 'other_guy', 'password': 'password'},
+    {'user_id': 3, 'username': 'Jimmy J', 'password': 'password'}
 ]
 messages = [
   {
-    'id': 1,
+    'message_id': 1,
     'created_on': '2022-10-08 12:22:24.971424',
-    'user': 'eric',
+    'user_id': 'eric',
+    'channel_id': 0,
     'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
   },
   {
-    'id': 2,
+    'message_id': 2,
     'created_on': '2022-10-08 12:23:25.909003',
-    'user': 'other_guy',
+    'user_id': 'other_guy',
+    'channel_id': 0,
     'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
   },
   {
-    'id': 3,
+    'message_id': 3,
     'created_on': '2022-10-09 12:23:25.909003',
-    'user': 'eric',
+    'user_id': 'eric',
+    'channel_id': 0,
     'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
   },
   {
-    'id': 4,
+    'message_id': 4,
     'created_on': '2022-10-09 12:25:25.909003',
-    'user': 'other_guy',
+    'user_id': 'other_guy',
+    'channel_id': 0,
     'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
   },
   {
-    'id': 5,
+    'message_id': 5,
     'created_on': '2022-10-10 14:23:25.909003',
-    'user': 'eric',
+    'user_id': 'eric',
+    'channel_id': 0,
     'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
   },
   {
-    'id': 6,
+    'message_id': 6,
     'created_on': '2022-10-10 16:23:25.909003',
-    'user': 'other_guy',
+    'user_id': 'other_guy',
+    'channel_id': 0,
     'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
   }
 ]
-channels = ['General', 'Random', 'Off-topic']
+channels = [
+    'General', 'Random', 'Off-topic'
+]
+channel_list = [
+    {'channel_id': 0, 'channel': 'General'},
+    {'channel_id': 1, 'channel': 'Random'},
+    {'channel_id': 2, 'channel': 'Off-topic'}
+]
 # END DUMMY DATA
 
 
