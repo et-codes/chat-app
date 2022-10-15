@@ -14,11 +14,6 @@ active_users = []
 active_sessions = {}
 
 # HTTP routes
-@app.route('/')
-def index():
-    return app.send_static_file('index.html')
-
-
 @app.get('/api/users')
 def return_active_users():
     return active_users
@@ -48,6 +43,12 @@ def return_all_channels():
 @app.get('/api/messages')
 def return_all_messages():
     return messages
+
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<string:path>')
+def index(path):
+    return app.send_static_file('index.html')
 
 
 # WEBSOCKET handling
