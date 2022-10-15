@@ -100,7 +100,8 @@ def handle_login(username):
 
 @socketio.on('logout')
 def handle_logout(username):
-    active_users.remove(username)
+    if username in active_users:
+        active_users.remove(username)
     sessions = active_sessions.copy()
     for sid, user in sessions.items():
         if user == username:
