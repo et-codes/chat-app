@@ -19,9 +19,13 @@ def return_active_users():
     return active_users
 
 
-@app.get('/api/users/<user>')
-def return_user(user):
-    return f'User {user}'
+@app.get('/api/users/<username>')
+def return_user(username):
+    for user in users:
+        if user['username'] == username:
+            print(f'Login request: {user}')
+            return user
+    return 'User not found.'
 
 
 @app.post('/api/users')
@@ -29,8 +33,15 @@ def add_user():
     content_type = request.headers.get('Content-Type')
     if (content_type == 'application/json'):
         json = request.json
-        created_on = datetime.today().isoformat()
-        return f"Added user {json['user']} on {created_on}"
+        user_id = max([user['user_id'] for user in users]) + 1
+        new_user = {
+            'user_id': user_id,
+            'username': json['username'],
+            'password': json['password']
+        }
+        users.append(new_user)
+        print(f'New user created: {new_user}')
+        return new_user
     else:
         return 'Content-Type not supported.'
 
