@@ -117,7 +117,8 @@ def disconnect():
         disconnected_user = active_sessions[request.sid]
         del active_sessions[request.sid]
 
-    active_users.remove(disconnected_user)
+    if disconnected_user in active_users:
+        active_users.remove(disconnected_user)
 
     print(f'Disconnected: {disconnected_user}')
 
