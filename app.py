@@ -65,7 +65,7 @@ def index(path):
 # WEBSOCKET handling
 @socketio.on('connect')
 def connect():
-    print(f'{request.sid} has connected.')
+    print(f'Connected: {request.sid}')
     if request.sid not in active_sessions:
         active_sessions[request.sid] = None
     socketio.emit('connect', f'Connected {request.sid}')
@@ -84,7 +84,7 @@ def handle_message(message):
         json.dumps(message_object), 
         broadcast=True
     )
-    print('New message created:', message_object)
+    print(f'New message created by: {message_object["user"]}')
     messages.append(message_object)
 
 
@@ -93,7 +93,7 @@ def handle_login(username):
     if username not in active_users:
         active_users.append(username)
         active_sessions[request.sid] = username
-        print('Logged in:', username, request.sid)
+        print(f'Logged in: {username}')
 
     socketio.emit('active_users', active_users, broadcast = True)
 
@@ -106,7 +106,7 @@ def handle_logout(username):
         if user == username:
             del active_sessions[sid]
 
-    print('Logged out:', username, request.sid)
+    print(f'Logged out: {username}')
 
     socketio.emit('active_users', active_users, broadcast = True)
 
@@ -119,7 +119,7 @@ def disconnect():
 
     active_users.remove(disconnected_user)
 
-    print('Disconnected', disconnected_user, request.sid)
+    print(f'Disconnected: {disconnected_user}')
 
     socketio.emit('active_users', active_users, broadcast = True)
 
