@@ -23,7 +23,7 @@ def return_active_users():
 def return_user(username):
     for user in users:
         if user['username'] == username:
-            print(f'Login request: {user}')
+            print(f'Login request: {user["username"]}')
             return user
     return 'User not found.'
 
@@ -40,7 +40,7 @@ def add_user():
             'password': json['password']
         }
         users.append(new_user)
-        print(f'New user created: {new_user}')
+        print(f'New user created: {new_user["username"]}')
         return new_user
     else:
         return 'Content-Type not supported.'
