@@ -78,7 +78,8 @@ def handle_message(message):
         'message_id': messages[-1]['message_id'] + 1,
         'created_on': datetime.today().isoformat(),
         'user': message['user'],
-        'text': message['text']
+        'text': message['text'],
+        'channel': message['channel']
     }
     socketio.send(
         json.dumps(message_object), 
