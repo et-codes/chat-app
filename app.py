@@ -138,42 +138,42 @@ messages = [
     'message_id': 1,
     'created_on': '2022-10-08 12:22:24.971424',
     'user': 'eric',
-    'channel_id': 0,
+    'channel': 'General',
     'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
   },
   {
     'message_id': 2,
     'created_on': '2022-10-08 12:23:25.909003',
     'user': 'other_guy',
-    'channel_id': 0,
+    'channel': 'General',
     'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
   },
   {
     'message_id': 3,
     'created_on': '2022-10-09 12:23:25.909003',
     'user': 'eric',
-    'channel_id': 0,
+    'channel': 'General',
     'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
   },
   {
     'message_id': 4,
     'created_on': '2022-10-09 12:25:25.909003',
     'user': 'other_guy',
-    'channel_id': 0,
+    'channel': 'General',
     'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
   },
   {
     'message_id': 5,
     'created_on': '2022-10-10 14:23:25.909003',
     'user': 'eric',
-    'channel_id': 0,
+    'channel': 'General',
     'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
   },
   {
     'message_id': 6,
     'created_on': '2022-10-10 16:23:25.909003',
     'user': 'other_guy',
-    'channel_id': 0,
+    'channel': 'General',
     'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
   }
 ]
