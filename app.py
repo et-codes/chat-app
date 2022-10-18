@@ -73,7 +73,7 @@ def add_user():
 
 @app.get('/api/channels')
 def return_all_channels():
-    query_channels = 'SELECT channel FROM channels'
+    query_channels = '''SELECT channel FROM channels'''
     cursor.execute(query_channels)
     result = cursor.fetchall()
     channels = [row['channel'] for row in result]
@@ -82,7 +82,24 @@ def return_all_channels():
 
 @app.get('/api/messages')
 def return_all_messages():
-    return messages
+    query_messages = '''
+        SELECT 
+            message_id,
+            messages.created_on,
+            users.username AS user,
+            channels.channel,
+            text
+        FROM messages
+        INNER JOIN channels
+        ON messages.channel_id = channels.channel_id
+        INNER JOIN users
+        ON messages.user_id = users.user_id;
+    '''
+    cursor.execute(query_messages)
+    result = []
+    for row in cursor.fetchall():
+        result.append(dict(row))
+    return result
 
 
 @app.route('/', defaults={'path': ''})
@@ -114,7 +131,7 @@ def handle_message(message):
         json.dumps(message_object), 
         broadcast=True
     )
-    print(f'New message created by {message_object["user"]} in {message_object["channel"]}')
+    print(f'New message by {message_object["user"]} in {message_object["channel"]}')
     messages.append(message_object)
 
 
