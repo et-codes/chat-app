@@ -71,7 +71,6 @@ def connect():
     print(f'Connected: {request.sid}')
     if request.sid not in active_sessions:
         active_sessions[request.sid] = None
-    socketio.emit('connect', f'Connected {request.sid}')
 
 
 @socketio.on('message')
@@ -97,6 +96,7 @@ def handle_login(username):
 def handle_logout(username):
     if username in active_users:
         active_users.remove(username)
+
     sessions = active_sessions.copy()
     for sid, user in sessions.items():
         if user == username:
