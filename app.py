@@ -1,3 +1,4 @@
+import db
 import json
 import os
 import psycopg2
@@ -47,6 +48,7 @@ def return_active_users():
 
 @app.get('/api/users/<username>')
 def return_user(username):
+    users = db.get_users()
     for user in users:
         if user['username'] == username:
             print(f'Login request: {user["username"]}')
@@ -56,6 +58,7 @@ def return_user(username):
 
 @app.post('/api/users')
 def add_user():
+    users = db.get_users()
     content_type = request.headers.get('Content-Type')
     if (content_type == 'application/json'):
         json = request.json
@@ -190,60 +193,6 @@ def disconnect():
     print(f'Disconnected: {disconnected_user}')
 
     socketio.emit('active_users', active_users, broadcast = True)
-
-
-# BEGIN DUMMY DATA
-users = [
-    {'user_id': 1, 'username': 'eric', 'password': 'password'},
-    {'user_id': 2, 'username': 'other_guy', 'password': 'password'},
-    {'user_id': 3, 'username': 'Jimmy J', 'password': 'password'}
-]
-
-messages = [
-  {
-    'message_id': 1,
-    'created_on': '2022-10-08 12:22:24.971424',
-    'user': 'eric',
-    'channel': 'General',
-    'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
-  },
-  {
-    'message_id': 2,
-    'created_on': '2022-10-08 12:23:25.909003',
-    'user': 'other_guy',
-    'channel': 'General',
-    'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
-  },
-  {
-    'message_id': 3,
-    'created_on': '2022-10-09 12:23:25.909003',
-    'user': 'eric',
-    'channel': 'General',
-    'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
-  },
-  {
-    'message_id': 4,
-    'created_on': '2022-10-09 12:25:25.909003',
-    'user': 'other_guy',
-    'channel': 'General',
-    'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
-  },
-  {
-    'message_id': 5,
-    'created_on': '2022-10-10 14:23:25.909003',
-    'user': 'eric',
-    'channel': 'General',
-    'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
-  },
-  {
-    'message_id': 6,
-    'created_on': '2022-10-10 16:23:25.909003',
-    'user': 'other_guy',
-    'channel': 'General',
-    'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
-  }
-]
-# END DUMMY DATA
 
 
 if __name__ == '__main__':
