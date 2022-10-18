@@ -21,6 +21,7 @@ socketio = SocketIO(app, cors_allowed_origins='*')
 
 active_users = []
 active_sessions = {}
+socketio.emit('ping', broadcast=True)
 
 # HTTP routes
 @app.get('/api/users')
@@ -118,6 +119,16 @@ def disconnect():
     print(f'Disconnected: {disconnected_user}')
 
     socketio.emit('active_users', active_users, broadcast = True)
+
+
+@socketio.on('ping')
+def ping(username):
+    # Rebuild user list after restarting server
+    if username not in active_users:
+        print(f'Ping from: {username}')
+        active_users.append(username)
+        active_sessions[request.sid] = username
+        socketio.emit('active_users', active_users, broadcast = True)
 
 
 if __name__ == '__main__':
