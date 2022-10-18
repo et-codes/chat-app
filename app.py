@@ -1,14 +1,39 @@
+import json
+import os
+import psycopg2
+import psycopg2.extras
 from datetime import datetime
+from dotenv import load_dotenv
 from flask import Flask, request
 from flask_cors import CORS
 from flask_socketio import SocketIO
-import json
 
 
+# Load environment variables
+load_dotenv()
+DATABASE_HOST = os.environ.get('DATABASE_HOST')
+DATABASE_NAME = os.environ.get('DATABASE_NAME')
+DATABASE_USER = os.environ.get('DATABASE_USER')
+DATABASE_PW = os.environ.get('DATABASE_PW')
+SECRET_KEY = os.environ.get('SECRET_KEY')
+
+# Set up Flask
 app = Flask(__name__, static_folder='./build', static_url_path='/')
-app.config['SECRET_KEY'] = 'et-codes'
+app.config['SECRET_KEY'] = SECRET_KEY
 CORS(app, resources={r'/*': {'origins': '*'}})
+
+# Set up websockets
 socketio = SocketIO(app, cors_allowed_origins='*')
+
+# Connect to database
+db_connection_string = ' '.join([
+    f'host={DATABASE_HOST}',
+    f'dbname={DATABASE_NAME}',
+    f'user={DATABASE_USER}',
+    f'password={DATABASE_PW}'
+])
+conn = psycopg2.connect(db_connection_string)
+cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
 active_users = []
 active_sessions = {}
@@ -48,6 +73,10 @@ def add_user():
 
 @app.get('/api/channels')
 def return_all_channels():
+    query_channels = 'SELECT channel FROM channels'
+    cursor.execute(query_channels)
+    result = cursor.fetchall()
+    channels = [row['channel'] for row in result]
     return channels
 
 
@@ -85,7 +114,7 @@ def handle_message(message):
         json.dumps(message_object), 
         broadcast=True
     )
-    print(f'New message created by: {message_object["user"]}')
+    print(f'New message created by {message_object["user"]} in {message_object["channel"]}')
     messages.append(message_object)
 
 
@@ -178,17 +207,6 @@ messages = [
     'text': 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Saepe cupiditate cum aut distinctio, rem voluptatibus beatae, unde odit ad suscipit magni dignissimos veniam ea dolorum.'
   }
 ]
-
-channels = [
-    'General', 'Random', 'Off-topic'
-]
-
-channel_list = [
-    {'channel_id': 0, 'channel': 'General'},
-    {'channel_id': 1, 'channel': 'Random'},
-    {'channel_id': 2, 'channel': 'Off-topic'}
-]
-
 # END DUMMY DATA
 
 
