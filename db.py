@@ -97,3 +97,19 @@ def login_user(username):
     '''
     cursor.execute(sql, (username,))
     return cursor.fetchone()[0]
+
+
+def get_user(username):
+    user_query = 'SELECT username, password FROM users WHERE username=%s'
+    cursor.execute(user_query, (username,));
+    return dict(cursor.fetchone())
+
+
+def create_user(new_user):
+    sql = '''
+        INSERT INTO users (username, password)
+        VALUES (%s, %s)
+        RETURNING username, password;
+    '''
+    cursor.execute(sql, (new_user['username'], new_user['password']))
+    return dict(cursor.fetchone())

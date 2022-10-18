@@ -1,9 +1,6 @@
 import db
 import json
 import os
-import psycopg2
-import psycopg2.extras
-from datetime import datetime
 from dotenv import load_dotenv
 from flask import Flask, request
 from flask_cors import CORS
@@ -12,10 +9,6 @@ from flask_socketio import SocketIO
 
 # Load environment variables
 load_dotenv()
-DATABASE_HOST = os.environ.get('DATABASE_HOST')
-DATABASE_NAME = os.environ.get('DATABASE_NAME')
-DATABASE_USER = os.environ.get('DATABASE_USER')
-DATABASE_PW = os.environ.get('DATABASE_PW')
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # Set up Flask
@@ -25,17 +18,6 @@ CORS(app, resources={r'/*': {'origins': '*'}})
 
 # Set up websockets
 socketio = SocketIO(app, cors_allowed_origins='*')
-
-# Connect to database
-db_connection_string = ' '.join([
-    f'host={DATABASE_HOST}',
-    f'dbname={DATABASE_NAME}',
-    f'user={DATABASE_USER}',
-    f'password={DATABASE_PW}'
-])
-conn = psycopg2.connect(db_connection_string)
-conn.autocommit = True
-cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
 active_users = []
 active_sessions = {}
@@ -48,31 +30,22 @@ def return_active_users():
 
 @app.get('/api/users/<username>')
 def return_user(username):
-    users = db.get_users()
-    for user in users:
-        if user['username'] == username:
-            print(f'Login request: {user["username"]}')
-            return user
+    user = db.get_user(username)
+    if user:
+        print(f'Login request: {user["username"]}')
+        return user
     return 'User not found.'
 
 
 @app.post('/api/users')
 def add_user():
-    users = db.get_users()
-    content_type = request.headers.get('Content-Type')
-    if (content_type == 'application/json'):
-        json = request.json
-        user_id = max([user['user_id'] for user in users]) + 1
-        new_user = {
-            'user_id': user_id,
-            'username': json['username'],
-            'password': json['password']
-        }
-        users.append(new_user)
-        print(f'New user created: {new_user["username"]}')
-        return new_user
-    else:
-        return 'Content-Type not supported.'
+    json = request.json
+    created_user = db.create_user({
+        'username': json['username'],
+        'password': json['password']
+    })
+    print(f'New user created: {created_user["username"]}')
+    return created_user
 
 
 @app.get('/api/channels')
@@ -103,12 +76,9 @@ def connect():
 @socketio.on('message')
 def handle_message(message):
     message = json.loads(message)
-    saved_message = db.create_message(message)
-    socketio.send(
-        json.dumps(saved_message), 
-        broadcast=True
-    )
-    print(f'New message by {saved_message["user"]} in {saved_message["channel"]}')
+    new_msg = db.create_message(message)
+    socketio.send(json.dumps(new_msg), broadcast=True)
+    print(f'New message by {new_msg["user"]} in {new_msg["channel"]}')
 
 
 @socketio.on('login')
