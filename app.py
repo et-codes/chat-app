@@ -77,34 +77,12 @@ def add_user():
 
 @app.get('/api/channels')
 def return_all_channels():
-    query_channels = '''SELECT channel FROM channels'''
-    cursor.execute(query_channels)
-    result = cursor.fetchall()
-    channels = [row['channel'] for row in result]
-    return channels
+    return db.get_channels()
 
 
 @app.get('/api/messages')
 def return_all_messages():
-    query_messages = '''
-        SELECT 
-            message_id,
-            messages.created_on,
-            users.username AS user,
-            channels.channel,
-            text
-        FROM messages
-        INNER JOIN channels
-        ON messages.channel_id = channels.channel_id
-        INNER JOIN users
-        ON messages.user_id = users.user_id
-        ORDER BY messages.created_on;
-    '''
-    cursor.execute(query_messages)
-    result = []
-    for row in cursor.fetchall():
-        result.append(dict(row))
-    return result
+    return db.get_messages()
 
 
 @app.route('/', defaults={'path': ''})
@@ -125,36 +103,12 @@ def connect():
 @socketio.on('message')
 def handle_message(message):
     message = json.loads(message)
-    
-    cursor.execute('SELECT user_id FROM users WHERE username=%s', 
-        (message["user"],))
-    user_id = cursor.fetchone()[0]
-
-    cursor.execute('SELECT channel_id FROM channels WHERE channel=%s',
-        (message["channel"],))
-    channel_id = cursor.fetchone()[0]
-
-    sql = '''
-        INSERT INTO messages (message_id, user_id, channel_id, text)
-        VALUES (DEFAULT, %s, %s, %s)
-        RETURNING message_id, created_on;
-    '''
-    cursor.execute(sql, (user_id, channel_id, message['text']))
-    message_id, created_on = cursor.fetchone()
-    
-    message_object = {
-        'message_id': message_id,
-        'created_on': created_on.isoformat(),
-        'user': message['user'],
-        'text': message['text'],
-        'channel': message['channel']
-    }
+    saved_message = db.create_message(message)
     socketio.send(
-        json.dumps(message_object), 
+        json.dumps(saved_message), 
         broadcast=True
     )
-    print(f'New message by {message_object["user"]} in {message_object["channel"]}')
-    messages.append(message_object)
+    print(f'New message by {saved_message["user"]} in {saved_message["channel"]}')
 
 
 @socketio.on('login')
@@ -162,7 +116,8 @@ def handle_login(username):
     if username not in active_users:
         active_users.append(username)
         active_sessions[request.sid] = username
-        print(f'Logged in: {username}')
+        timestamp = db.login_user(username)
+        print(f'Logged in: {username} at {timestamp}')
 
     socketio.emit('active_users', active_users, broadcast = True)
 
