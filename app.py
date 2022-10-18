@@ -33,6 +33,7 @@ db_connection_string = ' '.join([
     f'password={DATABASE_PW}'
 ])
 conn = psycopg2.connect(db_connection_string)
+conn.autocommit = True
 cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
 active_users = []
@@ -120,9 +121,26 @@ def connect():
 @socketio.on('message')
 def handle_message(message):
     message = json.loads(message)
+    
+    cursor.execute('SELECT user_id FROM users WHERE username=%s', 
+        (message["user"],))
+    user_id = cursor.fetchone()[0]
+
+    cursor.execute('SELECT channel_id FROM channels WHERE channel=%s',
+        (message["channel"],))
+    channel_id = cursor.fetchone()[0]
+
+    sql = '''
+        INSERT INTO messages (message_id, user_id, channel_id, text)
+        VALUES (DEFAULT, %s, %s, %s)
+        RETURNING message_id, created_on;
+    '''
+    cursor.execute(sql, (user_id, channel_id, message['text']))
+    message_id, created_on = cursor.fetchone()
+    
     message_object = {
-        'message_id': messages[-1]['message_id'] + 1,
-        'created_on': datetime.today().isoformat(),
+        'message_id': message_id,
+        'created_on': created_on.isoformat(),
         'user': message['user'],
         'text': message['text'],
         'channel': message['channel']
