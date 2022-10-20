@@ -51,7 +51,6 @@ def get_users():
     result = []
     for row in cursor.fetchall():
         result.append(dict(row))
-    print(f'get_users result: {result}')
     return result
 
 
@@ -112,7 +111,6 @@ def get_user(username):
 
 def create_user(new_user):
     (username, password) = new_user.values()
-    print(username, password, len(password))
     sql = '''
         INSERT INTO users (username, password)
         VALUES (%s, %s)

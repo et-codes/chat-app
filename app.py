@@ -34,7 +34,6 @@ def return_active_users():
 def return_user(username):
     user = db.get_user(username)
     if user is not None:
-        print(f'Login request: {user["username"]}')
         return user
     else:
         return 'User not found.'
@@ -54,7 +53,6 @@ def add_user():
         'password': hashed
     })
     
-    print(f'New user created: {created_user["username"]}')
     return created_user
 
 
@@ -90,7 +88,6 @@ def index(path):
 # WEBSOCKET handling
 @socketio.on('connect')
 def connect():
-    print(f'Connected: {request.sid}')
     if request.sid not in active_sessions:
         active_sessions[request.sid] = None
 
@@ -100,7 +97,6 @@ def handle_message(message):
     message = json.loads(message)
     new_msg = db.create_message(message)
     socketio.send(json.dumps(new_msg), broadcast=True)
-    print(f'New message by {new_msg["user"]} in {new_msg["channel"]}')
 
 
 @socketio.on('login')
@@ -108,8 +104,7 @@ def handle_login(username):
     if username not in active_users:
         active_users.append(username)
         active_sessions[request.sid] = username
-        timestamp = db.login_user(username)
-        print(f'Logged in: {username} at {timestamp}')
+        db.login_user(username)
 
     socketio.emit('active_users', active_users, broadcast = True)
 
@@ -124,8 +119,6 @@ def handle_logout(username):
         if user == username:
             del active_sessions[sid]
 
-    print(f'Logged out: {username}')
-
     socketio.emit('active_users', active_users, broadcast = True)
 
 
@@ -138,8 +131,6 @@ def disconnect():
     if disconnected_user in active_users:
         active_users.remove(disconnected_user)
 
-    print(f'Disconnected: {disconnected_user}')
-
     socketio.emit('active_users', active_users, broadcast = True)
 
 
@@ -147,7 +138,6 @@ def disconnect():
 def ping(username):
     # Rebuild user list after restarting server
     if username not in active_users:
-        print(f'Ping from: {username}')
         active_users.append(username)
         active_sessions[request.sid] = username
         socketio.emit('active_users', active_users, broadcast = True)
