@@ -33,10 +33,11 @@ def return_active_users():
 @app.get('/api/users/<username>')
 def return_user(username):
     user = db.get_user(username)
-    if user:
+    if user is not None:
         print(f'Login request: {user["username"]}')
         return user
-    return 'User not found.'
+    else:
+        return 'User not found.'
 
 
 @app.post('/api/users')
@@ -60,6 +61,7 @@ def add_user():
 @app.post('/api/login')
 def login_user():
     (username, password) = request.json.values()
+
     password = password.encode('utf-8')
     saved_password = db.get_user(username)['password'].encode('utf-8')
     

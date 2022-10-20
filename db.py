@@ -51,6 +51,7 @@ def get_users():
     result = []
     for row in cursor.fetchall():
         result.append(dict(row))
+    print(f'get_users result: {result}')
     return result
 
 
@@ -102,7 +103,11 @@ def login_user(username):
 def get_user(username):
     user_query = 'SELECT username, password FROM users WHERE username=%s'
     cursor.execute(user_query, (username,));
-    return dict(cursor.fetchone())
+    result = cursor.fetchone()
+    if result is not None:
+        return dict(result)
+    else:
+        return None
 
 
 def create_user(new_user):
