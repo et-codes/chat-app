@@ -106,10 +106,12 @@ def get_user(username):
 
 
 def create_user(new_user):
+    (username, password) = new_user.values()
+    print(username, password, len(password))
     sql = '''
         INSERT INTO users (username, password)
         VALUES (%s, %s)
-        RETURNING username, password;
+        RETURNING username;
     '''
-    cursor.execute(sql, (new_user['username'], new_user['password']))
+    cursor.execute(sql, (username, password))
     return dict(cursor.fetchone())

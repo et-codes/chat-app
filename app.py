@@ -1,3 +1,4 @@
+import bcrypt
 import db
 import json
 import os
@@ -40,13 +41,32 @@ def return_user(username):
 
 @app.post('/api/users')
 def add_user():
-    json = request.json
+    (username, password) = request.json.values()
+    
+    salt = bcrypt.gensalt()
+    password = password.encode('utf-8')
+
+    hashed = bcrypt.hashpw(password, salt).decode('utf-8')
+
     created_user = db.create_user({
-        'username': json['username'],
-        'password': json['password']
+        'username': username,
+        'password': hashed
     })
+    
     print(f'New user created: {created_user["username"]}')
     return created_user
+
+
+@app.post('/api/login')
+def login_user():
+    (username, password) = request.json.values()
+    password = password.encode('utf-8')
+    saved_password = db.get_user(username)['password'].encode('utf-8')
+    
+    if bcrypt.checkpw(password, saved_password):
+        return username
+    else:
+        return 'Incorrect password.'
 
 
 @app.get('/api/channels')
