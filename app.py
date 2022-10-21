@@ -72,6 +72,13 @@ def login_user():
     else:
         return 'Incorrect password.', 401
 
+
+@app.post('/api/token')
+def check_token():
+    token = request.json['token']
+    return {'expired': tokens.is_expired(token)}
+
+
 @app.post('/api/logout')
 def logout_user():
     username = request.json['username']
