@@ -68,6 +68,20 @@ def login_user():
     else:
         return 'Incorrect password.'
 
+@app.post('/api/logout')
+def logout_user():
+    username = request.json['username']
+    if username in active_users:
+        active_users.remove(username)
+
+    sessions = active_sessions.copy()
+    for sid, user in sessions.items():
+        if user == username:
+            del active_sessions[sid]
+
+    socketio.emit('active_users', active_users, broadcast = True)
+    return username
+
 
 @app.get('/api/channels')
 def return_all_channels():
@@ -109,19 +123,6 @@ def handle_login(username):
         active_users.append(username)
         active_sessions[request.sid] = username
         db.login_user(username)
-
-    socketio.emit('active_users', active_users, broadcast = True)
-
-
-@socketio.on('logout')
-def handle_logout(username):
-    if username in active_users:
-        active_users.remove(username)
-
-    sessions = active_sessions.copy()
-    for sid, user in sessions.items():
-        if user == username:
-            del active_sessions[sid]
 
     socketio.emit('active_users', active_users, broadcast = True)
 
