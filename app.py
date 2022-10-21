@@ -79,6 +79,17 @@ def return_all_messages():
     return db.get_messages()
 
 
+@app.post('/api/messages')
+def create_message():
+    message = request.json
+    new_msg = db.create_message(message)
+    if new_msg is not None:
+        socketio.send(json.dumps(new_msg), broadcast=True)
+        return 'Message created.'
+    else:
+        return 'Server error.'
+
+
 @app.route('/', defaults={'path': ''})
 @app.route('/<string:path>')
 def index(path):
@@ -90,13 +101,6 @@ def index(path):
 def connect():
     if request.sid not in active_sessions:
         active_sessions[request.sid] = None
-
-
-@socketio.on('message')
-def handle_message(message):
-    message = json.loads(message)
-    new_msg = db.create_message(message)
-    socketio.send(json.dumps(new_msg), broadcast=True)
 
 
 @socketio.on('login')
