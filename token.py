@@ -9,7 +9,7 @@ load_dotenv()
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 
-def create_token(username):
+def create(username):
     expiration_date = datetime.today() + timedelta(hours=24)
     payload_data = {
         "username": username,
@@ -23,7 +23,7 @@ def create_token(username):
     return token
 
 
-def check_token(token):
+def validate(token):
     try:
         payload = jwt.decode(
             token,
@@ -37,7 +37,7 @@ def check_token(token):
 
 if __name__ == '__main__':
     username = 'eric'
-    token = create_token(username)
+    token = create(username)
     print(token)
-    token_data = check_token(token)
+    token_data = validate(token)
     print(token_data)

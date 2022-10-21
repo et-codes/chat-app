@@ -1,4 +1,4 @@
-import tokens
+import token
 import bcrypt
 import db
 import json
@@ -23,7 +23,6 @@ socketio = SocketIO(app, cors_allowed_origins='*')
 
 active_users = []
 active_sessions = {}
-socketio.emit('ping', broadcast=True)
 
 # HTTP routes
 @app.get('/api/users')
@@ -65,7 +64,7 @@ def login_user():
     saved_password = db.get_user(username)['password'].encode('utf-8')
     
     if bcrypt.checkpw(password, saved_password):
-        token = tokens.create_token(username)
+        token = token.create(username)
         return token
     else:
         return 'Incorrect password.'
@@ -98,12 +97,17 @@ def return_all_messages():
 @app.post('/api/messages')
 def create_message():
     message = request.json
-    new_msg = db.create_message(message)
-    if new_msg is not None:
-        socketio.send(json.dumps(new_msg), broadcast=True)
-        return 'Message created.'
+    auth_header = request.headers.get('Authorization')
+    token = auth_header.split(' ')[1]
+    if token.validate(token):
+        new_msg = db.create_message(message)
+        if new_msg is not None:
+            socketio.send(json.dumps(new_msg), broadcast=True)
+            return 'Message created.'
+        else:
+            return 'Error sending message.'
     else:
-        return 'Server error.'
+        return 'Invalid token.'
 
 
 @app.route('/', defaults={'path': ''})
