@@ -1,3 +1,4 @@
+import auth
 import bcrypt
 import db
 import json
@@ -64,7 +65,8 @@ def login_user():
     saved_password = db.get_user(username)['password'].encode('utf-8')
     
     if bcrypt.checkpw(password, saved_password):
-        return username
+        token = auth.create_token(username)
+        return token
     else:
         return 'Incorrect password.'
 
