@@ -35,9 +35,27 @@ def validate(token):
         return False
 
 
+def is_expired(token):
+    try:
+        payload = jwt.decode(
+            token,
+            key=SECRET_KEY,
+            algorithms='HS256'
+        )
+
+        exp_date = datetime.fromisoformat(payload['expiration'])
+
+        if exp_date > datetime.today():
+            return False
+        else:
+            return True
+    except:
+        return True
+
+
 if __name__ == '__main__':
     username = 'eric'
     token = create(username)
-    print(token)
-    token_data = validate(token)
-    print(token_data)
+    print('Token:', token)
+    print('Token data:', validate(token))
+    print('Token expired:', is_expired(token))

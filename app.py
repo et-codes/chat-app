@@ -1,4 +1,4 @@
-import token
+import tokens
 import bcrypt
 import db
 import json
@@ -36,7 +36,7 @@ def return_user(username):
     if user is not None:
         return user
     else:
-        return 'User not found.'
+        return 'User not found.', 404
 
 
 @app.post('/api/users')
@@ -53,7 +53,10 @@ def add_user():
         'password': hashed
     })
     
-    return created_user
+    if created_user is not None:
+        return created_user, 201
+    else:
+        return 'Error creating user.', 500
 
 
 @app.post('/api/login')
@@ -64,10 +67,10 @@ def login_user():
     saved_password = db.get_user(username)['password'].encode('utf-8')
     
     if bcrypt.checkpw(password, saved_password):
-        token = token.create(username)
+        token = tokens.create(username)
         return token
     else:
-        return 'Incorrect password.'
+        return 'Incorrect password.', 401
 
 @app.post('/api/logout')
 def logout_user():
@@ -99,15 +102,15 @@ def create_message():
     message = request.json
     auth_header = request.headers.get('Authorization')
     token = auth_header.split(' ')[1]
-    if token.validate(token):
+    if tokens.validate(token) and not tokens.is_expired(token):
         new_msg = db.create_message(message)
         if new_msg is not None:
             socketio.send(json.dumps(new_msg), broadcast=True)
-            return 'Message created.'
+            return 'Message created.', 201
         else:
-            return 'Error sending message.'
+            return 'Error creating message.', 500
     else:
-        return 'Invalid token.'
+        return 'Invalid or expired token.', 401
 
 
 @app.route('/', defaults={'path': ''})
