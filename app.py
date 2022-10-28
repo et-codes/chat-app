@@ -64,7 +64,12 @@ def login_user():
     (username, password) = request.json.values()
 
     password = password.encode('utf-8')
-    saved_password = db.get_user(username)['password'].encode('utf-8')
+    user = db.get_user(username)
+
+    if user is not None:
+        saved_password = user['password'].encode('utf-8')
+    else:
+        return 'Invalid username.', 401
     
     if bcrypt.checkpw(password, saved_password):
         token = tokens.create(username)
