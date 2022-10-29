@@ -41,7 +41,9 @@ def get_messages():
     cursor.execute(query_messages)
     result = []
     for row in cursor.fetchall():
-        result.append(dict(row))
+        updated_row = dict(row)
+        updated_row['created_on'] = updated_row['created_on'].isoformat()
+        result.append(updated_row)
     return result
 
 
