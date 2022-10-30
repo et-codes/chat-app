@@ -154,8 +154,8 @@ def disconnect():
         disconnected_user = active_sessions[request.sid]
         del active_sessions[request.sid]
 
-    if disconnected_user in active_users:
-        active_users.remove(disconnected_user)
+        if disconnected_user in active_users:
+            active_users.remove(disconnected_user)
 
     socketio.emit('active_users', active_users, broadcast = True)
 
