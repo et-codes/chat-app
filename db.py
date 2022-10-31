@@ -120,3 +120,54 @@ def create_user(new_user):
     '''
     cursor.execute(sql, (username, password))
     return dict(cursor.fetchone())
+
+
+def initialize_database():
+    """
+    Creates database tables and channel list. Use this function when setting up a new database.
+    """
+    sql_list = [
+        '''
+            CREATE TABLE IF NOT EXISTS users(
+                user_id SERIAL PRIMARY KEY,
+                username VARCHAR(50) UNIQUE NOT NULL,
+                password VARCHAR(100) NOT NULL,
+                created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                last_login TIMESTAMP
+            );
+        ''',
+        '''
+            CREATE TABLE IF NOT EXISTS channels(
+                channel_id SERIAL PRIMARY KEY,
+                channel VARCHAR(50) UNIQUE NOT NULL,
+                created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        ''',
+        '''
+            CREATE TABLE IF NOT EXISTS messages(
+                message_id SERIAL PRIMARY KEY,
+                user_id INTEGER REFERENCES users(user_id) NOT NULL,
+                channel_id INTEGER REFERENCES channels(channel_id) NOT NULL,
+                text VARCHAR(512) NOT NULL,
+                created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        ''',
+        '''
+            INSERT INTO channels(channel)
+            VALUES
+                ('General'), 
+                ('Coding'),
+                ('Drumming'),
+                ('Random'),
+                ('Testing')
+            ON CONFLICT(channel) DO NOTHING;
+        '''
+    ]
+
+    for sql in sql_list:
+        cursor.execute(sql)
+
+
+if __name__ == '__main__':
+    print('Running DB initialization...')
+    initialize_database()
