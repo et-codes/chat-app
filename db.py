@@ -2,14 +2,13 @@
 import os
 import psycopg2
 import psycopg2.extras
+import sys
 from dotenv import load_dotenv
 
 
-# If true, use local development database
-development_mode = False
-
 # Import environment variables
 load_dotenv()
+DEVELOPMENT_MODE = os.environ.get('DEVELOPMENT_MODE')
 # For local development database
 DATABASE_HOST = os.environ.get('DATABASE_HOST')
 DATABASE_NAME = os.environ.get('DATABASE_NAME')
@@ -18,7 +17,7 @@ DATABASE_PW = os.environ.get('DATABASE_PW')
 # For production database
 DATABASE_CONNECTION = os.environ.get('DATABASE_CONNECTION')
 
-if development_mode:
+if DEVELOPMENT_MODE == 'true':
     db_connection_string = ' '.join([
         f'host={DATABASE_HOST}',
         f'dbname={DATABASE_NAME}',
@@ -28,9 +27,15 @@ if development_mode:
 else:
     db_connection_string = DATABASE_CONNECTION
 
-conn = psycopg2.connect(db_connection_string)
-conn.autocommit = True
-cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+try:
+    print('Connecting to database...')
+    conn = psycopg2.connect(db_connection_string, connect_timeout=10)
+    print('Database connected.')
+    conn.autocommit = True
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+except:
+    print('Could not connect to database.')
+    sys.exit(1)
 
 
 def get_messages():
