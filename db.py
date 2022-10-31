@@ -4,20 +4,30 @@ import psycopg2
 import psycopg2.extras
 from dotenv import load_dotenv
 
+
+# If true, use local development database
+development_mode = False
+
 # Import environment variables
 load_dotenv()
+# For local development database
 DATABASE_HOST = os.environ.get('DATABASE_HOST')
 DATABASE_NAME = os.environ.get('DATABASE_NAME')
 DATABASE_USER = os.environ.get('DATABASE_USER')
 DATABASE_PW = os.environ.get('DATABASE_PW')
+# For production database
+DATABASE_CONNECTION = os.environ.get('DATABASE_CONNECTION')
 
-# Connect to database
-db_connection_string = ' '.join([
-    f'host={DATABASE_HOST}',
-    f'dbname={DATABASE_NAME}',
-    f'user={DATABASE_USER}',
-    f'password={DATABASE_PW}'
-])
+if development_mode:
+    db_connection_string = ' '.join([
+        f'host={DATABASE_HOST}',
+        f'dbname={DATABASE_NAME}',
+        f'user={DATABASE_USER}',
+        f'password={DATABASE_PW}'
+    ])
+else:
+    db_connection_string = DATABASE_CONNECTION
+
 conn = psycopg2.connect(db_connection_string)
 conn.autocommit = True
 cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -57,7 +67,7 @@ def get_users():
 
 
 def get_channels():
-    query_channels = 'SELECT channel FROM channels'
+    query_channels = 'SELECT channel FROM channels ORDER BY channel_id'
     cursor.execute(query_channels)
     result = cursor.fetchall()
     channels = [row['channel'] for row in result]
