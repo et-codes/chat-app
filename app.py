@@ -72,9 +72,12 @@ def login_user():
         return 'Invalid username.', 401
     
     if bcrypt.checkpw(password, saved_password):
-        db.login_user(username)
+        last_logout = db.login_user(username)
         token = tokens.create(username)
-        return token
+        return {
+            'token': token,
+            'last_logout': last_logout
+        }
     else:
         return 'Incorrect password.', 401
 

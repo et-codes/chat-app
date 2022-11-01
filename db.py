@@ -71,6 +71,19 @@ def get_users():
     return result
 
 
+def get_user(username):
+    user_query = '''
+        SELECT username, password
+        FROM users WHERE username=%s
+        '''
+    cursor.execute(user_query, (username,));
+    result = cursor.fetchone()
+    if result is not None:
+        return dict(result)
+    else:
+        return None
+
+
 def get_channels():
     query_channels = 'SELECT channel FROM channels ORDER BY channel_id'
     cursor.execute(query_channels)
@@ -110,7 +123,7 @@ def login_user(username):
         UPDATE users
         SET last_login = CURRENT_TIMESTAMP
         WHERE username = %s
-        RETURNING last_login
+        RETURNING last_logout
     '''
     cursor.execute(sql, (username,))
     return cursor.fetchone()[0]
@@ -125,16 +138,6 @@ def logout_user(username):
     '''
     cursor.execute(sql, (username,))
     return cursor.fetchone()[0]
-
-
-def get_user(username):
-    user_query = 'SELECT username, password FROM users WHERE username=%s'
-    cursor.execute(user_query, (username,));
-    result = cursor.fetchone()
-    if result is not None:
-        return dict(result)
-    else:
-        return None
 
 
 def create_user(new_user):
