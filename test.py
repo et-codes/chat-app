@@ -1,3 +1,4 @@
+import json
 import os
 import requests
 import unittest
@@ -29,7 +30,7 @@ class TestApi(unittest.TestCase):
     def test_create_message(self):
         response = requests.post(self.login_url, json=self.login_data)
         self.assertEqual(response.status_code, 200)
-        token = response.text
+        token = json.loads(response.text)["token"]
 
         messages_url = 'http://localhost:5000/api/messages'
         test_message = {
