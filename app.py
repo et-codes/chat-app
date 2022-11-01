@@ -72,6 +72,7 @@ def login_user():
         return 'Invalid username.', 401
     
     if bcrypt.checkpw(password, saved_password):
+        db.login_user(username)
         token = tokens.create(username)
         return token
     else:
@@ -87,6 +88,7 @@ def check_token():
 @app.post('/api/logout')
 def logout_user():
     username = request.json['username']
+    db.logout_user(username)
     if username in active_users:
         active_users.remove(username)
 
@@ -143,7 +145,6 @@ def handle_login(username):
     if username not in active_users:
         active_users.append(username)
         active_sessions[request.sid] = username
-        db.login_user(username)
 
     socketio.emit('active_users', active_users, broadcast = True)
 

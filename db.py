@@ -116,6 +116,17 @@ def login_user(username):
     return cursor.fetchone()[0]
 
 
+def logout_user(username):
+    sql = '''
+        UPDATE users
+        SET last_logout = CURRENT_TIMESTAMP
+        WHERE username = %s
+        RETURNING last_logout
+    '''
+    cursor.execute(sql, (username,))
+    return cursor.fetchone()[0]
+
+
 def get_user(username):
     user_query = 'SELECT username, password FROM users WHERE username=%s'
     cursor.execute(user_query, (username,));
@@ -147,15 +158,18 @@ def initialize_database():
                 user_id SERIAL PRIMARY KEY,
                 username VARCHAR(50) UNIQUE NOT NULL,
                 password VARCHAR(100) NOT NULL,
-                created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                last_login TIMESTAMP
+                created_on TIMESTAMP WITH TIME ZONE 
+                    DEFAULT CURRENT_TIMESTAMP,
+                last_login TIMESTAMP WITH TIME ZONE,
+                last_logout TIMESTAMP WITH TIME ZONE
             );
         ''',
         '''
             CREATE TABLE IF NOT EXISTS channels(
                 channel_id SERIAL PRIMARY KEY,
                 channel VARCHAR(50) UNIQUE NOT NULL,
-                created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                created_on TIMESTAMP WITH TIME ZONE 
+                    DEFAULT CURRENT_TIMESTAMP
             );
         ''',
         '''
@@ -164,7 +178,8 @@ def initialize_database():
                 user_id INTEGER REFERENCES users(user_id) NOT NULL,
                 channel_id INTEGER REFERENCES channels(channel_id) NOT NULL,
                 text VARCHAR(512) NOT NULL,
-                created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                created_on TIMESTAMP WITH TIME ZONE 
+                    DEFAULT CURRENT_TIMESTAMP
             );
         ''',
         '''
