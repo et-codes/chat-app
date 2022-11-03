@@ -9,33 +9,17 @@ from dotenv import load_dotenv
 # Import environment variables
 load_dotenv()
 DEVELOPMENT_MODE = os.environ.get('DEVELOPMENT_MODE')
-# For local development database
-DATABASE_HOST = os.environ.get('DATABASE_HOST')
-DATABASE_NAME = os.environ.get('DATABASE_NAME')
-DATABASE_USER = os.environ.get('DATABASE_USER')
-DATABASE_PW = os.environ.get('DATABASE_PW')
-# For production database
-DATABASE_CONNECTION = os.environ.get('DATABASE_CONNECTION')
 
 if DEVELOPMENT_MODE == 'true':
-    db_connection_string = ' '.join([
-        f'host={DATABASE_HOST}',
-        f'dbname={DATABASE_NAME}',
-        f'user={DATABASE_USER}',
-        f'password={DATABASE_PW}'
-    ])
+    db_connection_string = os.environ.get('DATABASE_CONNECTION_DEV')
 else:
-    db_connection_string = DATABASE_CONNECTION
+    db_connection_string = os.environ.get('DATABASE_CONNECTION')
 
-try:
-    print('Connecting to database...')
-    conn = psycopg2.connect(db_connection_string, connect_timeout=10)
-    print('Database connected.')
-    conn.autocommit = True
-    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-except:
-    print('Could not connect to database.')
-    sys.exit(1)
+print('Connecting to database...')
+conn = psycopg2.connect(db_connection_string, connect_timeout=10)
+print('Database connected.')
+conn.autocommit = True
+cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
 
 def get_messages():
