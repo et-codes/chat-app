@@ -2,15 +2,11 @@
 import os
 import psycopg2
 import psycopg2.extras
-import sys
 from dotenv import load_dotenv
 
 
-# Import environment variables
 load_dotenv()
-DEVELOPMENT_MODE = os.environ.get('DEVELOPMENT_MODE')
-
-if DEVELOPMENT_MODE == 'true':
+if os.environ.get('DEVELOPMENT_MODE') == 'true':
     db_connection_string = os.environ.get('DATABASE_CONNECTION_DEV')
 else:
     db_connection_string = os.environ.get('DATABASE_CONNECTION')
@@ -43,15 +39,6 @@ def get_messages():
         updated_row = dict(row)
         updated_row['created_on'] = updated_row['created_on'].isoformat()
         result.append(updated_row)
-    return result
-
-
-def get_users():
-    query_users = 'SELECT username, password FROM users'
-    cursor.execute(query_users)
-    result = []
-    for row in cursor.fetchall():
-        result.append(dict(row))
     return result
 
 
