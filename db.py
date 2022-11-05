@@ -126,6 +126,12 @@ def initialize_database():
     """
     Creates database tables and channel list. Use this function when setting up a new database.
     """
+    channel_list = []
+    with open('channel_list.txt') as file:
+        for channel in file.readlines():
+            channel_list.append(f"('{channel.strip()}')")
+    channel_string = ','.join(channel_list)
+
     sql_list = [
         '''
             CREATE TABLE IF NOT EXISTS users(
@@ -156,14 +162,10 @@ def initialize_database():
                     DEFAULT CURRENT_TIMESTAMP
             );
         ''',
-        '''
+        f'''
             INSERT INTO channels(channel)
             VALUES
-                ('General'), 
-                ('Coding'),
-                ('Drumming'),
-                ('Random'),
-                ('Testing')
+                {channel_string}
             ON CONFLICT(channel) DO NOTHING;
         '''
     ]
