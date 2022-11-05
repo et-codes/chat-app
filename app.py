@@ -133,7 +133,10 @@ def create_message():
 @app.route('/', defaults={'path': ''})
 @app.route('/<string:path>')
 def index(path):
-    return app.send_static_file('index.html')
+    try:
+        return app.send_static_file(path)
+    except:
+        return app.send_static_file('index.html')
 
 
 # WEBSOCKET handling
