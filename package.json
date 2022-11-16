@@ -1,0 +1,19 @@
+{
+  "name": "chat",
+  "version": "1.0.0",
+  "description": "Yadda Yadda Yadda real-time chat app",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm install --prefix front-end && npm run build --prefix front-end && mv front-end/build back-end/build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/et-codes/chat-app.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/et-codes/chat-app/issues"
+  },
+  "homepage": "https://github.com/et-codes/chat-app#readme"
+}
