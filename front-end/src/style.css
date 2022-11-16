@@ -1,0 +1,10 @@
+body {
+  background-color: #f8f9fa;
+}
+
+.MessagePane {
+  height: 80vh;
+  max-height: 80vh;
+  min-height: 300px;
+  overflow-y: auto;
+}
