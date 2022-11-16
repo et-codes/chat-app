@@ -8,7 +8,7 @@ const Header = ({ user, login, logout, alert }) => {
         <Col className="h2 m-0 col-3">
           <span>Yadda<sup className="text-primary">3</sup></span>
           <a
-            href="https://github.com/et-codes/chat-frontend"
+            href="https://github.com/et-codes/chat-app"
             className="link-secondary text-decoration-none"
             rel="noreferrer"
             target="_blank"
