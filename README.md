@@ -1,10 +1,8 @@
-# Yadda Yadda Yadda: Real-time Chat App
-
-_Note: Backend code can be found [here](https://github.com/et-codes/chat-backend)._
+# Yadda Yadda Yadda - Real-Time Chat App
 
 ### Try Yadda<sup>3</sup> [here](https://et-chat-app.herokuapp.com/)!
 
-![screenshot](public/screenshot.png)
+![screenshot](front-end/public/screenshot.png)
 
 ## Using the app:
 
@@ -16,11 +14,12 @@ _Note: Backend code can be found [here](https://github.com/et-codes/chat-backend
 
 Follow the steps below to run your own local copy of [Yadda<sup>3</sup>](https://et-chat-app.herokuapp.com/).
 
-1. Clone both the [chat-frontend](https://github.com/et-codes/chat-frontend) and [chat-backend](https://github.com/et-codes/chat-backend) repositories into a local project directory.
+1. Clone the [chat-app](https://github.com/et-codes/chat-app) repository into a local project directory.
 1. Let's start by setting up the back end first:
+   1. Change the working directory to `back-end`.
    1. Install the `poetry` dependency management tool. ([Link](https://python-poetry.org/docs/#installation))
-   1. Run `poetry shell` in the `chat-backend` directory.
-   1. Run `poetry install` in the `chat-backend` directory.
+   1. Run `poetry shell`.
+   1. Run `poetry install`.
    1. Set environment variable `DEVELOPMENT_MODE` to `false`.
    1. Set environment variable `SECRET_KEY` to any string you want.
    1. Install [PostgreSQL](https://www.postgresql.org/download/) and create a new database.
@@ -29,13 +28,13 @@ Follow the steps below to run your own local copy of [Yadda<sup>3</sup>](https:/
    1. Run `poetry run python db.py` to set up the database tables and populate the channel list. (You may need to use `poetry run python3 db.py` depending on your operating system.)
    1. If you wish to use the `test.py` unit tests, you will also need to create a test user account (you can do this from the chat app). Set environment variables `TEST_USERNAME` and `TEST_PASSWORD` to make the credentials available to the script.
 1. Now for the front end:
-   1. Run `npm install` in the `chat-frontend` directory.
+   1. Change the working directory to `front-end`.
+   1. Run `npm install`.
    1. Set environment variable `REACT_APP_BACKEND` to `http://localhost:5000`.
    1. Set environment variable `REACT_APP_CORS_ORIGIN` to `http://localhost:3000`.
-   1. Run `npm run build` command from the `chat-frontend` folder.
-   1. Delete the existing `build` folder from the `chat-backend` directory.
-   1. Move the new `build` folder from the `chat-frontend` directory to the `chat-backend` directory.
-1. Run `poetry run python app.py` from the `chat-backend` directory. (You may need to use `poetry run python3 app.py` depending on your operating system.)
+   1. Run `npm run build`.
+   1. Move the new `build` folder from the `front-end` directory to the `back-end` directory.
+1. Run `poetry run flask run` from the `back-end` directory.
 1. Navigate to `http://localhost:5000` and enjoy!
 
 ## Technical information
